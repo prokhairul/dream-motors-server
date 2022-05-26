@@ -23,9 +23,12 @@ async function run() {
         await client.connect();
         console.log('Database Connected')
 
+        //Database Collections
         const productCollection = client.db('dream_motors').collection('products');
         const reviewCollection = client.db('dream_motors').collection('reviews');
+        const userCollection = client.db('dream_motors').collection('users');
 
+        //API
         app.get('/product', async (req, res) => {
             const query = {};
             const cursor = productCollection.find(query);
@@ -40,7 +43,25 @@ async function run() {
             res.send(review);
         })
 
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: user,
+            }
+            const result = await userCollection.updateOne(filter, updateDoc, options)
+            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+            res.send({ result, token });
+        })
+
+
+
+        //End Tag of Try
     }
+
+
 
     finally {
 
