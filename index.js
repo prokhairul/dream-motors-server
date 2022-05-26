@@ -43,6 +43,13 @@ async function run() {
             res.send(result);
         });
 
+        app.delete('/product/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const result = await productCollection.deleteOne(filter);
+            res.send(result);
+        })
+
         //Review API
         app.get('/review', async (req, res) => {
             const query = {};
