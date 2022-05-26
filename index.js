@@ -170,7 +170,6 @@ async function run() {
             res.send({ result, token });
         })
 
-
         //End Tag of Try
     }
 
