@@ -92,6 +92,14 @@ async function run() {
         })
 
 
+        // User API 
+        app.get('/user', async (req, res) => {
+            const users = await userCollection.find().toArray();
+            res.send(users);
+        });
+
+
+
         //JWT Token API
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
