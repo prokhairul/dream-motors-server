@@ -28,14 +28,22 @@ async function run() {
         const reviewCollection = client.db('dream_motors').collection('reviews');
         const userCollection = client.db('dream_motors').collection('users');
 
-        //API
+
+        //Product API
         app.get('/product', async (req, res) => {
             const query = {};
             const cursor = productCollection.find(query);
             const products = await cursor.toArray();
             res.send(products);
-        })
+        });
 
+        app.post('/product', async (req, res) => {
+            const addProduct = req.body;
+            const result = await productCollection.insertOne(addProduct);
+            res.send(result);
+        });
+
+        //Review API
         app.get('/review', async (req, res) => {
             const query = {};
             const cursor = reviewCollection.find(query);
@@ -43,6 +51,13 @@ async function run() {
             res.send(review);
         })
 
+        app.post('/review', async (req, res) => {
+            const addReview = req.body;
+            const result = await reviewCollection.insertOne(addReview);
+            res.send(result);
+        });
+
+        //JWT Token API
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
@@ -55,7 +70,6 @@ async function run() {
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
             res.send({ result, token });
         })
-
 
 
         //End Tag of Try
