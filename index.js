@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 const app = express();
@@ -27,6 +27,7 @@ async function run() {
         const productCollection = client.db('dream_motors').collection('products');
         const reviewCollection = client.db('dream_motors').collection('reviews');
         const userCollection = client.db('dream_motors').collection('users');
+        const orderCollection = client.db('dream_motors').collection('orders');
 
 
         //Product API
@@ -48,7 +49,17 @@ async function run() {
             const filter = { email: email };
             const result = await productCollection.deleteOne(filter);
             res.send(result);
+
+            console.log(email)
         })
+
+        app.get('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const product = await productCollection.findOne(query);
+            res.send(product);
+        });
+
 
         //Review API
         app.get('/review', async (req, res) => {
@@ -63,6 +74,23 @@ async function run() {
             const result = await reviewCollection.insertOne(addReview);
             res.send(result);
         });
+
+
+        // Order API 
+
+        app.post('/order', async (req, res) => {
+            const addOrder = req.body;
+            const result = await orderCollection.insertOne(addOrder);
+            res.send(result);
+        });
+
+        app.get('/order', async (req, res) => {
+            const query = {};
+            const cursor = orderCollection.find(query);
+            const order = await cursor.toArray();
+            res.send(order);
+        })
+
 
         //JWT Token API
         app.put('/user/:email', async (req, res) => {
